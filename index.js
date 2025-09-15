@@ -1,83 +1,60 @@
-import { useState } from 'react'
-import Head from 'next/head'
+import { useState } from 'react';
+import '../public/style.css';
 
 export default function Home() {
-  const [phone, setPhone] = useState('')
-  const [pairCode, setPairCode] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [sessionId, setSessionId] = useState('')
+  const [phone, setPhone] = useState('');
+  const [pairCode, setPairCode] = useState('');
+  const [sessionId, setSessionId] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handlePair = async () => {
-    if (!phone) return alert('Enter your phone number')
-    setLoading(true)
-    try {
-      const res = await fetch('/api/pair', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-      })
-      const data = await res.json()
-      setPairCode(data.pairCode || '')
-      setSessionId(data.sessionId || '')
-    } catch (err) {
-      console.error(err)
-      alert('Error pairing')
-    }
-    setLoading(false)
-  }
+    setLoading(true);
+    const res = await fetch('/api/pair', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    setPairCode(data.pairCode || '');
+    setLoading(false);
+  };
+
+  const handleGetSession = async () => {
+    const res = await fetch('/api/session');
+    const data = await res.json();
+    setSessionId(data.sessionId || '');
+  };
 
   return (
-    <>
-      <Head>
-        <title>DevMD WhatsApp Agent</title>
-        <link rel="stylesheet" href="/style.css" />
-      </Head>
+    <div className="container">
+      <h1>🚀MRDEV MD WHATSAPP AGENT</h1>
+      <p className="sub">Enter your phone number to get started</p>
 
-      <div className="container">
-        <header>
-          <h1>DevMD WhatsApp Agent 🚀</h1>
-          <p className="subheading">Fast pairing & live SESSION_ID delivery</p>
-        </header>
+      <input
+        type="text"
+        placeholder="e.g. 2348012345678"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+      <button onClick={handlePair}>{loading ? 'Loading...' : 'Get Pair Code'}</button>
 
-        <input
-          type="text"
-          placeholder="Enter your phone number (e.g. 2348012345678)"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <button onClick={handlePair} disabled={loading}>
-          {loading ? 'Pairing...' : 'Get Pairing Code'}
-        </button>
+      {pairCode && <p className="success">✅ Pair Code: <strong>{pairCode}</strong></p>}
 
-        {pairCode && (
-          <div className="pair-section">
-            <h2>📌 Your Pairing Code:</h2>
-            <p className="pair-code">{pairCode}</p>
-          </div>
-        )}
+      <button onClick={handleGetSession}>Get Session ID</button>
+      {sessionId && <p className="success">🔑 Session ID: <strong>{sessionId}</strong></p>}
 
-        {sessionId && (
-          <div className="session-section">
-            <h2>💠 Your SESSION_ID:</h2>
-            <textarea readOnly value={sessionId}></textarea>
-          </div>
-        )}
-
-        <div className="features">
-          <h3>✨ Bot Features:</h3>
-          <ul>
-            <li>Auto reply messages</li>
-            <li>Group participant updates</li>
-            <li>Status monitoring</li>
-            <li>Fast connection & live session</li>
-            <li>Deploy anywhere: Vercel, Railway, Render</li>
-          </ul>
-        </div>
-
-        <footer>
-          <p>Developed by 𝐌𝐑ܮ𝐃𝐄𝐕 — Contact: +2349264624021</p>
-        </footer>
+      <div className="info">
+        <p>💡 Developer: <strong>Mr Dev</strong></p>
+        <p>📱 Contact: <strong>+2349164624021</strong></p>
+        <p>🌐 Deployment: <strong><a href="https://vercel.com/your-project" target="_blank">Vercel Link</a></strong></p>
+        <p>✨ Words of the day: “Stay curious, keep coding, enjoy bots! Explore, Innovate, Automate!”</p>
+        <p>💫 Fun phrases: “Hack the day, bot the way, code your life!”</p>
       </div>
-    </>
-  )
+
+      <footer>
+        <p>© 2025 Mr Dev • All rights reserved • Visit <a href="https://vercel.com/your-project" target="_blank">Deployment</a></p>
+        <p>📢 Stay Updated: “Bots are life, automate smartly!”</p>
+      </footer>
+    </div>
+  );
 }
