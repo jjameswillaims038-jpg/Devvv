@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../public/style.css';
 
 export default function Home() {
@@ -6,14 +6,21 @@ export default function Home() {
   const [pairCode, setPairCode] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [color, setColor] = useState('#ff4d4f');
 
-  // <-- Replace with your deployed bot API URL -->
-  const BOT_API = 'https://devmd-bot.vercel.app/api';
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+      setColor(randomColor);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handlePair = async () => {
+    if (!phone) return alert('Enter phone number!');
     setLoading(true);
     try {
-      const res = await fetch(`${BOT_API}/pair`, {
+      const res = await fetch('/api/pair', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
@@ -21,27 +28,24 @@ export default function Home() {
       const data = await res.json();
       setPairCode(data.pairCode || '');
     } catch (err) {
-      console.error('Error fetching pair code:', err);
-      alert('Failed to get pair code. Check bot API URL.');
-    } finally {
-      setLoading(false);
+      alert('Error fetching pair code');
     }
+    setLoading(false);
   };
 
   const handleGetSession = async () => {
     try {
-      const res = await fetch(`${BOT_API}/session`);
+      const res = await fetch('/api/session');
       const data = await res.json();
       setSessionId(data.sessionId || '');
     } catch (err) {
-      console.error('Error fetching session ID:', err);
-      alert('Failed to get session ID. Check bot API URL.');
+      alert('Error fetching session');
     }
   };
 
   return (
     <div className="container">
-      <h1>🚀 MRDEV MD WHATSAPP AGENT</h1>
+      <h1 style={{ color }}>🚀 MRDEV MD WHATSAPP AGENT</h1>
       <p className="sub">Enter your phone number to get started</p>
 
       <input
@@ -60,14 +64,13 @@ export default function Home() {
       <div className="info">
         <p>💡 Developer: <strong>Mr Dev</strong></p>
         <p>📱 Contact: <strong>+2349164624021</strong></p>
-        <p>🌐 Web Deployment: <strong><a href="https://devmd-pied.vercel.app/" target="_blank">Frontend</a></strong></p>
-        <p>✨ Bot API: <strong><a href={BOT_API} target="_blank">{BOT_API}</a></strong></p>
+        <p>🌐 Deployment: <strong><a href="https://devmd-pied.vercel.app/" target="_blank">Vercel</a></strong></p>
         <p>✨ Words of the day: “Stay curious, keep coding, enjoy bots! Explore, Innovate, Automate!”</p>
         <p>💫 Fun phrases: “Hack the day, bot the way, code your life!”</p>
       </div>
 
       <footer>
-        <p>© 2025 Mr Dev • All rights reserved</p>
+        <p>© 2025 Mr Dev • All rights reserved • Visit <a href="https://devmd-pied.vercel.app/" target="_blank">Deployment</a></p>
         <p>📢 Stay Updated: “Bots are life, automate smartly!”</p>
       </footer>
     </div>
