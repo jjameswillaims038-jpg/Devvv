@@ -1,11 +1,15 @@
-import fs from 'fs';
-import path from 'path';
+export default async function handler(req, res) {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-export default function handler(req, res) {
-  const sessionFile = path.join(process.cwd(), 'session/session.json');
-  if (!fs.existsSync(sessionFile)) return res.status(404).json({ error: 'Session not found' });
-
-  const sessionData = JSON.parse(fs.readFileSync(sessionFile, 'utf-8'));
-  const sessionId = Buffer.from(JSON.stringify(sessionData)).toString('base64');
-  res.status(200).json({ sessionId });
+  try {
+    const botUrl = 'https://devmd-pied.vercel.app/api/session';
+    const response = await fetch(botUrl);
+    const data = await response.json();
+    res.status(200).json({ sessionId: data.sessionId });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get session' });
+  }
 }
+
+
+
